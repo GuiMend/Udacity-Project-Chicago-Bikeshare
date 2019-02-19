@@ -30,8 +30,8 @@ input("Press Enter to continue...")
 # TODO: Print the first 20 rows using a loop to identify the data.
 print("\n\nTASK 1: Printing the first 20 samples")
 
-for i in range(20):
-    print(f'Row {i}: {data_list[i]}')
+for index in range(20):
+    print(f'Row {index}: {data_list[index]}')
 
 # Let's change the data_list to remove the header from it.
 data_list = data_list[1:]
@@ -45,8 +45,8 @@ input("Press Enter to continue...")
 
 print("\nTASK 2: Printing the genders of the first 20 samples")
 
-for i, sample in enumerate(data_list[:20]):
-    print(f'Row {i+1} gender: {sample[-2]}')
+for index, row in enumerate(data_list[:20]):
+    print(f'Row {index+1} gender: {row[-2]}')
 
 # Cool! We can get the rows(samples) iterating with a for and the columns
 # (features) by index.
@@ -60,6 +60,7 @@ input("Press Enter to continue...")
 
 def column_to_list(data, index):
     """
+    This function recieves a table and return a list of one column of the table
     Args:
         data: list of rows containing a list of columns in each row.
         index: index of desired column.
@@ -123,6 +124,7 @@ input("Press Enter to continue...")
 
 def count_gender(data_list):
     """
+    Recieves a table and return the male and female count in a list
     Args:
         data: list of rows containing a list of columns in each row.
     Returns:
@@ -159,6 +161,8 @@ input("Press Enter to continue...")
 
 def most_popular_gender(data_list):
     """
+    Recieves a table and returns a string containing the most popular 
+    gender in the table
     Args:
         data: list of rows containing a list of columns in each row.
     Returns:
@@ -203,23 +207,28 @@ print("\nTASK 7: Check the chart!")
 
 def count_user_type(data_list):
     """
+    Recieves a table and return in a list the count of user types
     Args:
         data: list of rows containing a list of columns in each row.
     Returns:
-        list with the count of customers and subscribers
+        list with the count of customers, subscribers and dependents
     """
     customer = 0
     subscriber = 0
+    dependent = 0
     for gender in column_to_list(data_list, -3):
         if gender == 'Customer':
             customer += 1
         elif gender == 'Subscriber':
             subscriber += 1
-    return [customer, subscriber]
+        elif gender == 'Dependent':
+            dependent += 1
+    return [customer, subscriber, dependent]
 
 
-types = ["Customer", "Subscriber"]
+types = ["Customer", "Subscriber", "Dependent"]
 quantity = count_user_type(data_list)
+print('quantity: ', quantity)
 y_pos = list(range(len(types)))
 plt.bar(y_pos, quantity)
 plt.ylabel('Quantity')
@@ -252,17 +261,42 @@ max_trip = 0.
 mean_trip = 0.
 median_trip = 0.
 
+
+def calculate_mean(trips):
+    """
+    Recieves a list of trips and return the mean of the duration
+    Args:
+        trips: list of numbers containing the duration of a trip.
+    Returns:
+        number with the mean trip duration
+    """
+    trip_duration_sum = 0
+    for trip_duration in trips:
+        trip_duration_sum += trip_duration
+    return trip_duration_sum / len(trips)
+
+
+def calculate_median(trips):
+    """
+    Recieves a list of trips and return the meadian of the list
+    Args:
+        trips: list of numbers containing the duration of a trip.
+    Returns:
+        number with the meadian of trips
+    """
+    if len(trips) % 2 == 0:
+        lower_medium_index = len(trips) // 2
+        return (trips[lower_medium_index] +
+                trips[lower_medium_index + 1]) / 2
+
+    return trips[(len(trips)+1)//2]
+
+
 trip_duration_list.sort()
 min_trip = trip_duration_list[0]
 max_trip = trip_duration_list[-1]
-mean_trip = sum(trip_duration_list) / len(trip_duration_list)
-
-if len(trip_duration_list) % 2 == 0:
-    lower_medium_index = len(trip_duration_list) // 2
-    median_trip = (trip_duration_list[lower_medium_index] +
-                   trip_duration_list[lower_medium_index + 1]) / 2
-else:
-    median_trip = trip_duration_list[(len(trip_duration_list)+1)//2]
+mean_trip = calculate_mean(trip_duration_list)
+median_trip = calculate_median(trip_duration_list)
 
 print("\nTASK 9: Printing the min, max, mean and median")
 print("Min: ", min_trip, "Max: ", max_trip,
@@ -314,6 +348,14 @@ answer = "yes"
 
 
 def count_items(column_list):
+    """
+    Recieves a list and returns a tuple with 2 lists, one containing the
+    category and the other containing the total count in the received list
+    Args:
+        column_list: list of data.
+    Returns:
+        tuple with two lists, the types and the total count
+    """
     item_types = {_ for _ in column_list}
     item_types = list(item_types)
     count_items = [0 for _ in item_types]
